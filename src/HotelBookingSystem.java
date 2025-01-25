@@ -7,7 +7,6 @@ public class HotelBookingSystem {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
         while (true) {
             // Display menu options
             System.out.println("=== Hotel Room Booking System ===");
