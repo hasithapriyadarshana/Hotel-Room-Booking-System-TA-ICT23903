@@ -115,7 +115,7 @@ public class HotelBookingSystem {
         String roomNumber = scanner.nextLine().trim();
 
         for (Room room : roomList) {
-            if (room.getRoomNumber().equals(roomNumber) && room.isAvailable()) {
+            if (room.getRoomNumber().equalsIgnoreCase(roomNumber) && room.isAvailable()) {
                 room.setAvailable(false);
                 System.out.println("Room booked successfully!");
                 return;
@@ -132,7 +132,7 @@ public class HotelBookingSystem {
         String roomNumber = scanner.nextLine().trim();
 
         for (Room room : roomList) {
-            if (room.getRoomNumber().equals(roomNumber) && !room.isAvailable()) {
+            if (room.getRoomNumber().equalsIgnoreCase(roomNumber) && !room.isAvailable()) {
                 room.setAvailable(true);
                 System.out.println("Booking canceled successfully!");
                 return;
