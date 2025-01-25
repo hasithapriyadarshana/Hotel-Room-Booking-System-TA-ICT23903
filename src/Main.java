@@ -1,12 +1,15 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Main {
-    private static ArrayList<Room> rooms = new ArrayList<>();
+public class HotelBookingSystem {
+    // List to store all the rooms in the hotel
+    private static ArrayList<Room> roomList = new ArrayList<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+
         while (true) {
+            // Display menu options
             System.out.println("=== Hotel Room Booking System ===");
             System.out.println("1. Add Room");
             System.out.println("2. Display All Rooms");
@@ -15,27 +18,30 @@ public class Main {
             System.out.println("5. Cancel Booking");
             System.out.println("6. Exit");
             System.out.print("\nEnter your choice: ");
-            int choice = scanner.nextInt();
+
+            int userChoice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
-            // Handles user actions based on their menu choice.
-            switch (choice) {
+            // Execute actions based on user choice
+            switch (userChoice) {
                 case 1 -> addRoom(scanner);
                 case 2 -> displayAllRooms();
                 case 3 -> searchRoomByType(scanner);
-                case 4 -> addBooking(scanner);
-                case 5 -> cancelBooking(scanner);
+                case 4 -> bookRoom(scanner);
+                case 5 -> cancelRoomBooking(scanner);
                 case 6 -> {
-                    System.out.println("Exit");
+                    System.out.println("Exiting the system. Goodbye!");
                     return;
                 }
-                default -> System.out.println("Invalid choice. Try again.");
+                default -> System.out.println("Invalid choice. Please try again.");
             }
         }
     }
 
+    // Method to add a new room to the system
     public static void addRoom(Scanner scanner) {
-        System.out.println("== Adding A Room ==");
+        System.out.println("== Adding A New Room ==");
+
         System.out.print("Enter Room Number: ");
         int roomNumber = scanner.nextInt();
         scanner.nextLine(); // Consume newline
@@ -56,74 +62,88 @@ public class Main {
         scanner.nextLine(); // Consume newline
 
         System.out.print("Is this a Deluxe Room? (yes/no): ");
-        boolean isDeluxeRoom = scanner.nextLine().equalsIgnoreCase("yes");
+        boolean isDeluxe = scanner.nextLine().equalsIgnoreCase("yes");
 
-        if (isDeluxeRoom) {
+        if (isDeluxe) {
             System.out.print("Is WiFi Included? (yes/no): ");
-            boolean isWiFiIncluded = scanner.nextLine().equalsIgnoreCase("yes");
+            boolean hasWiFi = scanner.nextLine().equalsIgnoreCase("yes");
+
             System.out.print("Is Breakfast Included? (yes/no): ");
-            boolean isBreakfastIncluded = scanner.nextLine().equalsIgnoreCase("yes");
-            rooms.add(new DeluxeRoom(String.valueOf(roomNumber), roomType, pricePerNight, true, isWiFiIncluded, isBreakfastIncluded));
+            boolean hasBreakfast = scanner.nextLine().equalsIgnoreCase("yes");
+
+            roomList.add(new DeluxeRoom(String.valueOf(roomNumber), roomType, pricePerNight, true, hasWiFi, hasBreakfast));
         } else {
-            rooms.add(new Room(String.valueOf(roomNumber), roomType, pricePerNight, true));
+            roomList.add(new Room(String.valueOf(roomNumber), roomType, pricePerNight, true));
         }
+
         System.out.println("Room added successfully!\n");
     }
 
-    public static void searchRoomByType(Scanner scanner) {
-        System.out.println("== Searching Room By Type ==");
-        System.out.print("Enter Room Type to Search (Single, Double, Suite): ");
-        String roomType = scanner.nextLine().trim();
-        boolean found = false;
-        for (Room room : rooms) {
-            if (room.getRoomType().equalsIgnoreCase(roomType)) {
-                room.displayRoomInfo();
-                found = true;
-                System.out.println();
-            }
-        }
-        if (!found) {
-            System.out.println("No rooms of the specified type were found.");
+    // Method to display all rooms
+    public static void displayAllRooms() {
+        System.out.println("== Displaying All Rooms ==");
+        for (Room room : roomList) {
+            room.displayRoomInfo();
+            System.out.println();
         }
     }
 
-    public static void addBooking(Scanner scanner) {
-        System.out.println("== Booking Room ==");
+    // Method to search for rooms by type
+    public static void searchRoomByType(Scanner scanner) {
+        System.out.println("== Search Rooms By Type ==");
+        System.out.print("Enter Room Type (Single, Double, Suite): ");
+        String roomType = scanner.nextLine().trim();
+
+        boolean roomFound = false;
+        for (Room room : roomList) {
+            if (room.getRoomType().equalsIgnoreCase(roomType)) {
+                room.displayRoomInfo();
+                System.out.println();
+                roomFound = true;
+            }
+        }
+
+        if (!roomFound) {
+            System.out.println("No rooms of the specified type found.");
+        }
+    }
+
+    // Method to book a room
+    public static void bookRoom(Scanner scanner) {
+        System.out.println("== Book A Room ==");
         System.out.print("Enter Room Number to Book: ");
         String roomNumber = scanner.nextLine().trim();
-        for (Room room : rooms) {
+
+        for (Room room : roomList) {
             if (room.getRoomNumber().equals(roomNumber) && room.isAvailable()) {
                 room.setAvailable(false);
                 System.out.println("Room booked successfully!");
                 return;
             }
         }
+
         System.out.println("Room not available or invalid room number.");
     }
 
-    public static void cancelBooking(Scanner scanner) {
-        System.out.println("== Cancel Booking ==");
+    // Method to cancel a room booking
+    public static void cancelRoomBooking(Scanner scanner) {
+        System.out.println("== Cancel Room Booking ==");
         System.out.print("Enter Room Number to Cancel Booking: ");
         String roomNumber = scanner.nextLine().trim();
-        for (Room room : rooms) {
+
+        for (Room room : roomList) {
             if (room.getRoomNumber().equals(roomNumber) && !room.isAvailable()) {
                 room.setAvailable(true);
                 System.out.println("Booking canceled successfully!");
                 return;
             }
         }
-        System.out.println("Room is not booked or invalid room number.");
-    }
 
-    public static void displayAllRooms() {
-        System.out.println("== Displaying All Rooms ==");
-        for (Room room : rooms) {
-            room.displayRoomInfo();
-            System.out.println();
-        }
+        System.out.println("Room is not booked or invalid room number.");
     }
 }
 
+// Basic Room class to define room attributes
 class Room {
     private String roomNumber;
     private String roomType;
@@ -145,26 +165,23 @@ class Room {
         return roomType;
     }
 
-    public double getPricePerNight() {
-        return pricePerNight;
-    }
-
     public boolean isAvailable() {
         return isAvailable;
     }
 
-    public void setAvailable(boolean available) {
-        isAvailable = available;
+    public void setAvailable(boolean isAvailable) {
+        this.isAvailable = isAvailable;
     }
 
     public void displayRoomInfo() {
         System.out.println("Room Number: " + roomNumber);
-        System.out.println("Room Type: " + roomType.toUpperCase());
-        System.out.println("Price per Night: " + pricePerNight);
+        System.out.println("Room Type: " + roomType);
+        System.out.println("Price Per Night: " + pricePerNight);
         System.out.println("Available: " + isAvailable);
     }
 }
 
+// DeluxeRoom class extending Room with additional features
 class DeluxeRoom extends Room {
     private boolean wifiIncluded;
     private boolean breakfastIncluded;
@@ -173,14 +190,6 @@ class DeluxeRoom extends Room {
         super(roomNumber, roomType, pricePerNight, isAvailable);
         this.wifiIncluded = wifiIncluded;
         this.breakfastIncluded = breakfastIncluded;
-    }
-
-    public boolean isWifiIncluded() {
-        return wifiIncluded;
-    }
-
-    public boolean isBreakfastIncluded() {
-        return breakfastIncluded;
     }
 
     @Override
